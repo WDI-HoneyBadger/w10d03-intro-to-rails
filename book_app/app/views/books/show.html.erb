@@ -1,0 +1,69 @@
+<h1 class="page-title img-line first-bg">Book</h1>
+<div class="show">
+    <div class="book-info info">
+        <h2 class="card-title"><%= @book.title %></h2>
+        <h4><%= link_to("By: #{@book.author.name}", @book.author) %></h4>
+        <p>Genre: <%= @book.genre %></p>
+        <p>Pages: <%= @book.pages %></p>
+        <div class="card-footer">
+            <div class="footer-buttons">
+                <%= link_to("✎", edit_book_path(@book), :class => "pop-button") %>
+                <%= button_to("✕", @book, method: :delete, :class=>"pop-button") %>
+            </div>
+        </div>
+    </div>
+    <div class="info">
+      <h2 class="card-title">Comments</h2>
+      <div class="comments">
+        <div class="new-comment">
+          <img src=<%= @current_user.avatar %> alt="">
+          <%= form_for(@comment, :html => {:class => "form comment-info"}) do |f| %>
+          <h3><%= @current_user.name %></h3>
+          <div class="input-group">
+            <%= f.text_area :content, :placeholder => "Comment" %>
+            <%= render "shared/input_errors", {errors: flash["comment"] ? flash["comment"]["content"] : []} %>
+          </div>
+          <%= f.hidden_field :user_id %>
+          <%= f.hidden_field :book_id, :value => @book.id%>
+          <%= f.submit %>
+          <% end %>
+        </div>
+        <div class="comments-container">
+          <% @comments.each do |comment| %>
+            <div class="comment">
+              <img src=<%= comment.user.avatar %> alt="">
+              <div class="comment-info" >
+                <div class="title">
+                  <h3>
+                    <%= comment.user.name %>
+                    <span class="comment-date">
+                      <%= comment.created_at.strftime("%m/%d/%Y %I:%M%p") %>
+                    </span>
+                  </h3>
+                  <% if comment.user.id == @current_user.id %>
+                    <div class="footer-buttons">
+                        <button class="pop-button edit-comment" data-id=<%= comment.id %>>✎</button>
+                        <%= button_to("✕", comment, method: :delete, :class=>"pop-button") %>
+                    </div>
+                  <% end %>
+                </div>
+                <p id=<%= "#{comment.id}-info" %>><%= comment.content %></p>
+                <% if comment.user.id == @current_user.id %>
+                  <%= form_for(comment, :html => {:class => "form comment-info edit-comment", :id=> "#{comment.id}-form"}) do |f| %>
+                    <div class="input-group">
+                      <%= f.text_area :content, :placeholder => "Comment" %>
+                      <%= render "shared/input_errors", {errors: flash["comment"] ? flash["comment"]["content"] : []} %>
+                    </div>
+                    <%= f.hidden_field :user_id %>
+                    <%= f.hidden_field :book_id, :value => @book.id%>
+                    <%= f.submit %>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <div class="card-footer">
+    </div>
+</div>
